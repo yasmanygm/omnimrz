@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalar PaddlePaddle (versión estable 2.4.2 sin AVX; ajusta según tu hardware)
-RUN python -m pip install --no-cache-dir paddlepaddle==2.4.2 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/noavx/stable.html
+RUN python -m pip install --no-cache-dir paddlepaddle==2.6.2 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/noavx/stable.html
 
 # Instalar PaddleOCR y todas sus dependencias (incluye PyYAML, etc.)
 RUN python -m pip install --no-cache-dir paddleocr
