@@ -14,8 +14,22 @@ RUN apt-get update && apt-get install -y \
 # Instalar PaddlePaddle (para hardware sin AVX)
 RUN python -m pip install --no-cache-dir paddlepaddle==2.6.2 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/noavx/stable.html
 
-# Instalar PaddleOCR
-RUN python -m pip install --no-cache-dir paddleocr==2.7.3
+# ============================================
+# INSTALAR DEPENDENCIAS CON VERSIONES COMPATIBLES
+# ============================================
+# Primero numpy (debe ir antes que opencv)
+RUN pip install --no-cache-dir numpy==1.24.3
+
+# Luego el resto de dependencias
+RUN pip install --no-cache-dir \
+    opencv-python-headless==4.8.1.78 \
+    paddleocr==2.7.3 \
+    Flask==2.3.3 \
+    Pillow==10.1.0 \
+    python-dateutil==2.8.2 \
+    pytesseract==0.3.13 \
+    PyYAML==6.0.3 \
+    scipy==1.13.1
 
 # Descargar y extraer omnimrz
 RUN curl -L https://files.pythonhosted.org/packages/source/o/omnimrz/omnimrz-0.2.1.tar.gz -o /tmp/omnimrz.tar.gz && \
