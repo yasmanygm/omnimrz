@@ -30,7 +30,10 @@ RUN pip install --no-cache-dir \
     PyYAML \
     scipy
 
-RUN pip install omnimrz==0.2.0
+# Opción 2: Desde GitHub (para última versión, descomentar si es necesario)
+RUN pip install --no-cache-dir git+https://github.com/AzwadFawadHasan/OmniMRZ.git
+
+#RUN pip install omnimrz==0.2.0
 
 # Descargar y extraer omnimrz
 #RUN curl -L https://files.pythonhosted.org/packages/source/o/omnimrz/omnimrz-0.2.1.tar.gz -o /tmp/omnimrz.tar.gz &&  cd /tmp && tar -xzf omnimrz.tar.gz
