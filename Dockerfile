@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalar PaddlePaddle (para hardware sin AVX)
-RUN python -m pip install --no-cache-dir paddlepaddle==3.2.2 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html
+RUN python -m pip install --no-cache-dir paddlepaddle==3.3.0 -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
 
 # ============================================
 # INSTALAR DEPENDENCIAS CON VERSIONES COMPATIBLES
@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir numpy==1.24.3
 
 RUN pip install --no-cache-dir \
     opencv-python-headless \
-    paddleocr==3.4.0 \
+    paddleocr==3.3.0 \
     Flask==2.3.3 \
     Pillow \
     python-dateutil \
