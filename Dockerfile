@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalar PaddlePaddle (para hardware sin AVX)
-RUN python -m pip install --no-cache-dir paddlepaddle==3.3.1 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/noavx/stable.html
+RUN python -m pip install --no-cache-dir paddlepaddle==3.2.2 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/noavx/stable.html
 
 # ============================================
 # INSTALAR DEPENDENCIAS CON VERSIONES COMPATIBLES
