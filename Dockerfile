@@ -1,14 +1,16 @@
-# Usar la imagen oficial de PaddleOCR como base
-FROM paddlepaddle/paddleocr:latest
+# Usar imagen oficial de PaddlePaddle desde registro de Baidu
+FROM ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddle:3.0.0
 
 # Variable de entorno para almacenar modelos descargados
 ENV PADDLE_HOME=/root/.paddleocr
 
-# Instalar OmniMRZ y asegurar que paddleocr está presente
+# Actualizar pip e instalar dependencias necesarias
+RUN pip install --upgrade pip
+
+# Instalar OmniMRZ y PaddleOCR
 RUN pip install omnimrz paddleocr --no-cache-dir
 
-# Verificar que la instalación fue exitosa
+# Verificar instalación
 RUN python -c "import omnimrz; print('OmniMRZ installed successfully')"
 
-# Comando por defecto al ejecutar el contenedor
 CMD ["python"]
