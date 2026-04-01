@@ -27,23 +27,35 @@ RUN cp -r /tmp/omnimrz-0.2.1/omnimrz /usr/local/lib/python3.9/site-packages/
 # Instalar dependencias adicionales
 RUN python -m pip install --no-cache-dir ScreenshotScanner PyYAML pytesseract opencv-python scipy
 
-# --- PREDESCARGA DE MODELOS PaddleOCR EN MÚLTIPLES IDIOMAS ---
-RUN echo "=== Descargando modelos de PaddleOCR (inglés y español) ===" && \
+# --- PREDESCARGA DE MODELOS CON DIAGNÓSTICO ---
+RUN echo "=== Verificando instalación de PaddleOCR ===" && \
+    python -c "import paddleocr; print('PaddleOCR version:', paddleocr.__version__)" && \
+    echo "=== Iniciando descarga de modelos ===" && \
     python -c "\
 import os; \
+import sys; \
 os.environ['PADDLE_HOME'] = '/root/.paddleocr'; \
-from paddleocr import PaddleOCR; \
-print('📥 Descargando modelo inglés...'); \
-ocr_en = PaddleOCR(lang='en', use_angle_cls=False); \
-print('✅ Modelo inglés listo'); \
-print('📥 Descargando modelo español...'); \
-ocr_es = PaddleOCR(lang='es', use_angle_cls=False); \
-print('✅ Modelo español listo'); \
-print('🎉 Todos los modelos pre-descargados correctamente'); \
+os.environ['PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK'] = 'True'; \
+print('PADDLE_HOME:', os.environ['PADDLE_HOME']); \
+print('Python version:', sys.version); \
+try: \
+    from paddleocr import PaddleOCR; \
+    print('📥 Descargando modelo inglés...'); \
+    ocr_en = PaddleOCR(lang='en', use_angle_cls=False, show_log=False); \
+    print('✅ Modelo inglés listo'); \
+    print('📥 Descargando modelo español...'); \
+    ocr_es = PaddleOCR(lang='es', use_angle_cls=False, show_log=False); \
+    print('✅ Modelo español listo'); \
+    print('🎉 Todos los modelos pre-descargados correctamente'); \
+except Exception as e: \
+    print(f'❌ Error: {e}'); \
+    import traceback; \
+    traceback.print_exc(); \
+    sys.exit(1); \
 " && \
     echo "=== Modelos descargados ===" && \
-    du -sh /root/.paddleocr/ && \
-    ls -la /root/.paddleocr/
+    ls -la /root/.paddleocr/ 2>/dev/null || echo "No se encontró el directorio" && \
+    find /root/.paddleocr -type f -name "*.pdparams" 2>/dev/null | head -10 || echo "No se encontraron modelos"
 
 # Verificar que el módulo omnimrz se importa correctamente
 RUN python -c "import omnimrz; print('OmniMRZ installed successfully')"
