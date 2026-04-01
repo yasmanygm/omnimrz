@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y wget \
 RUN python -m pip install --no-cache-dir paddlepaddle==2.6.2 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/noavx/stable.html
 
 # Instalar PaddleOCR y sus dependencias
-RUN python -m pip install --no-cache-dir paddleocr
+RUN python -m pip install --no-cache-dir paddleocr==2.8.1
 
 # Descargar y extraer omnimrz
 RUN curl -L https://files.pythonhosted.org/packages/source/o/omnimrz/omnimrz-0.2.1.tar.gz -o /tmp/omnimrz.tar.gz && \
