@@ -11,8 +11,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar PaddlePaddle 2.4.2 (para hardware sin AVX)
-RUN python -m pip install --no-cache-dir paddlepaddle==2.6.2 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/noavx/stable.html
+# Instalar PaddlePaddle (para hardware sin AVX)
+RUN python -m pip install --no-cache-dir paddlepaddle -f https://www.paddlepaddle.org.cn/whl/linux/mkl/noavx/stable.html
 
 # Instalar PaddleOCR
 RUN python -m pip install --no-cache-dir paddleocr
