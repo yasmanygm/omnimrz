@@ -37,7 +37,7 @@ RUN pip install --no-cache-dir \
 RUN curl -L https://github.com/AzwadFawadHasan/OmniMRZ/archive/refs/tags/v0.2.0.tar.gz -o /tmp/omnimrz.tar.gz &&  cd /tmp && tar -xzf omnimrz.tar.gz
 
 # Copiar manualmente el código fuente a site-packages
-#RUN cp -r /tmp/omnimrz-0.2.1/omnimrz /usr/local/lib/python3.9/site-packages/
+RUN cp -r /tmp/OmniMRZ-0.2.0/omnimrz /usr/local/lib/python3.9/site-packages/
 
 # Instalar dependencias adicionales
 RUN python -m pip install --no-cache-dir ScreenshotScanner PyYAML pytesseract opencv-python scipy
