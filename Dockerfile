@@ -12,10 +12,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalar PaddlePaddle (para hardware sin AVX)
-RUN python -m pip install --no-cache-dir paddlepaddle -f https://www.paddlepaddle.org.cn/whl/linux/mkl/noavx/stable.html
+RUN python -m pip install --no-cache-dir paddlepaddle=2.5.2 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/noavx/stable.html
 
 # Instalar PaddleOCR
-RUN python -m pip install --no-cache-dir paddleocr
+RUN python -m pip install --no-cache-dir paddleocr=2.7.3
 
 # Descargar y extraer omnimrz
 RUN curl -L https://files.pythonhosted.org/packages/source/o/omnimrz/omnimrz-0.2.1.tar.gz -o /tmp/omnimrz.tar.gz && \
