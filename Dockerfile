@@ -1,6 +1,6 @@
 FROM python:3.9-slim-bookworm
 
-# Instalar dependencias del sistema necesarias para OpenCV y PaddleOCR
+# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
     libgl1 \
     libglib2.0-0 \
@@ -10,14 +10,17 @@ RUN apt-get update && apt-get install -y \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar PaddlePaddle 3.0.0 (CPU con AVX - ajusta según tu hardware)
-RUN python3 -m pip install paddlepaddle==3.0.0 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html
+# Instalar PaddlePaddle desde el índice oficial (versión estable 2.6.1)
+RUN python -m pip install --no-cache-dir paddlepaddle==2.6.1 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html
 
-# Instalar OmniMRZ y PaddleOCR usando el mismo intérprete
-RUN python3 -m pip install --force-reinstall omnimrz paddleocr --no-cache-dir
+# Instalar OmniMRZ y PaddleOCR de forma aislada, sin reinstalar dependencias globales
+RUN python -m pip install --no-cache-dir --no-deps omnimrz paddleocr && \
+    python -m pip install --no-cache-dir requests Pillow numpy opencv-python opencv-contrib-python pytesseract scipy
 
-# Verificar que el módulo se importa correctamente
-RUN python3 -c "import sys; print('Python path:', sys.path)" && \
-    python3 -c "import omnimrz; print('OmniMRZ installed successfully')"
+# Verificar instalación
+RUN python -c "import sys; print('Python path:', sys.path)" && \
+    python -c "import site; print('Site packages:', site.getsitepackages())" && \
+    ls -la /usr/local/lib/python3.9/site-packages/ | grep omnimrz && \
+    python -c "import omnimrz; print('OmniMRZ installed successfully')"
 
-CMD ["python3"]
+CMD ["python"]
