@@ -20,10 +20,9 @@ RUN python -m pip install --no-cache-dir paddlepaddle==2.6.2 -f https://www.padd
 # Primero numpy (debe ir antes que opencv)
 RUN pip install --no-cache-dir numpy==1.24.3
 
-# Luego el resto de dependencias
 RUN pip install --no-cache-dir \
     opencv-python-headless==4.8.1.78 \
-    paddleocr==2.7.3 \
+    paddleocr==3.4.0 \
     Flask==2.3.3 \
     Pillow==10.1.0 \
     python-dateutil==2.8.2 \
