@@ -18,7 +18,7 @@ RUN python -m pip install --no-cache-dir paddlepaddle==3.3.0 -i https://www.padd
 # INSTALAR DEPENDENCIAS CON VERSIONES COMPATIBLES
 # ============================================
 # Primero numpy (debe ir antes que opencv)
-RUN pip install --no-cache-dir numpy==1.24.3
+RUN pip install --no-cache-dir numpy
 
 RUN pip install --no-cache-dir \
     opencv-python-headless \
@@ -30,12 +30,13 @@ RUN pip install --no-cache-dir \
     PyYAML \
     scipy
 
+RUN pip install omnimrz==0.2.0
+
 # Descargar y extraer omnimrz
-RUN curl -L https://files.pythonhosted.org/packages/source/o/omnimrz/omnimrz-0.2.1.tar.gz -o /tmp/omnimrz.tar.gz && \
-    cd /tmp && tar -xzf omnimrz.tar.gz
+#RUN curl -L https://files.pythonhosted.org/packages/source/o/omnimrz/omnimrz-0.2.1.tar.gz -o /tmp/omnimrz.tar.gz &&  cd /tmp && tar -xzf omnimrz.tar.gz
 
 # Copiar manualmente el código fuente a site-packages
-RUN cp -r /tmp/omnimrz-0.2.1/omnimrz /usr/local/lib/python3.9/site-packages/
+#RUN cp -r /tmp/omnimrz-0.2.1/omnimrz /usr/local/lib/python3.9/site-packages/
 
 # Instalar dependencias adicionales
 RUN python -m pip install --no-cache-dir ScreenshotScanner PyYAML pytesseract opencv-python scipy
