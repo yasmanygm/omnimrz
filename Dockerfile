@@ -34,6 +34,27 @@ RUN python -c "import omnimrz; print('OmniMRZ installed successfully')"
 RUN python -c "from paddleocr import PaddleOCR; PaddleOCR(lang='en')"
 
 # Verificar modelos descargados
-RUN ls -la /root/.paddleocr/ && du -sh /root/.paddleocr/
+RUN echo "=== Modelos descargados por PaddleOCR ===" && \
+    ls -la /root/.paddlex/official_models/ && \
+    du -sh /root/.paddlex/
+
+# Crear enlace para PaddleOCR (por si busca en /root/.paddleocr)
+RUN ln -sf /root/.paddlex /root/.paddleocr && \
+    echo "✅ /root/.paddleocr -> /root/.paddlex"
+
+# Crear enlace para OmniMRZ (busca en /root/.omnimrz/models)
+RUN mkdir -p /root/.omnimrz && \
+    ln -sf /root/.paddlex /root/.omnimrz/models && \
+    echo "✅ /root/.omnimrz/models -> /root/.paddlex"
+
+# Verificar enlaces
+RUN echo "=== Verificando enlaces simbólicos ===" && \
+    ls -la /root/.paddleocr && \
+    ls -la /root/.omnimrz/models && \
+    echo "✅ Enlaces creados correctamente"
+
+ENV PADDLEOCR_DOWNLOAD_MODELS=0
+ENV OMNIMRZ_DOWNLOAD_MODELS=0
+ENV FLAGS_use_mkldnn=0
 
 CMD ["python"]
