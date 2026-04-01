@@ -30,4 +30,10 @@ RUN python -m pip install --no-cache-dir ScreenshotScanner PyYAML pytesseract op
 # Verificar que el módulo omnimrz se importa correctamente
 RUN python -c "import omnimrz; print('OmniMRZ installed successfully')"
 
+# Descargar modelos durante el build
+RUN python -c "from paddleocr import PaddleOCR; PaddleOCR(use_angle_cls=True, lang='en', show_log=True)"
+
+# Verificar modelos descargados
+RUN ls -la /root/.paddleocr/ && du -sh /root/.paddleocr/
+
 CMD ["python"]
