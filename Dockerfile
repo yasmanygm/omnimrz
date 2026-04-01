@@ -60,4 +60,26 @@ except Exception as e: \
 # Verificar que el módulo omnimrz se importa correctamente
 RUN python -c "import omnimrz; print('OmniMRZ installed successfully')"
 
+# Crear script de descarga de modelos
+RUN cat > /tmp/download_models.py << 'EOF'
+import os
+os.environ['PADDLE_HOME'] = '/root/.paddleocr'
+os.environ['PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK'] = 'True'
+
+from paddleocr import PaddleOCR
+
+print("📥 Descargando modelo inglés...")
+ocr_en = PaddleOCR(lang='en', use_angle_cls=False, show_log=False)
+print("✅ Modelo inglés listo")
+
+print("📥 Descargando modelo español...")
+ocr_es = PaddleOCR(lang='es', use_angle_cls=False, show_log=False)
+print("✅ Modelo español listo")
+EOF
+
+# Ejecutar el script
+RUN python /tmp/download_models.py
+
+# Ejecutar el script
+RUN python /tmp/download_models.py
 CMD ["python"]
