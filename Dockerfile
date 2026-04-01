@@ -1,33 +1,44 @@
 FROM python:3.9-slim-bookworm
 
 # Dependencias del sistema
-RUN apt-get update && apt-get install -y wget \
+RUN apt-get update && apt-get install -y wget\
     libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
     libxrender1 \
     libgomp1 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar PaddlePaddle (versión estable 2.6.1 con AVX)
-RUN python -m pip install --no-cache-dir paddlepaddle==2.6.2 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html
-
-# Instalar PaddleOCR y sus dependencias completas
+# Instalar PaddlePaddle y PaddleOCR
+RUN python -m pip install --no-cache-dir paddlepaddle==2.6.2 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/noavx/stable.html
 RUN python -m pip install --no-cache-dir paddleocr
 
-# Instalar dependencias que omnimrz necesita (ScreenshotScanner ya viene con paddleocr, pero por si acaso)
-RUN python -m pip install --no-cache-dir pytesseract opencv-python scipy
-
-# Descargar el tar.gz de omnimrz desde PyPI
-RUN wget https://files.pythonhosted.org/packages/source/o/omnimrz/omnimrz-0.2.1.tar.gz -O /tmp/omnimrz.tar.gz && \
+# Descargar y extraer omnimrz
+RUN curl -L https://files.pythonhosted.org/packages/source/o/omnimrz/omnimrz-0.2.1.tar.gz -o /tmp/omnimrz.tar.gz && \
     cd /tmp && tar -xzf omnimrz.tar.gz
 
-# Instalar omnimrz en modo editable (esto asegura que el código se copie correctamente)
-RUN cd /tmp/omnimrz-0.2.1 && pip install --no-cache-dir -e .
+# DIAGNÓSTICO: listar la estructura del código fuente
+RUN echo "=== Contenido del directorio extraído ===" && \
+    ls -la /tmp/omnimrz-0.2.1/ && \
+    echo "=== Archivos Python encontrados ===" && \
+    find /tmp/omnimrz-0.2.1 -name "*.py" -type f
 
-# Verificar que el módulo se importa correctamente
-RUN python -c "import sys; print('Python path:', sys.path)" && \
-    python -c "import omnimrz; print('OmniMRZ installed successfully')"
+# Instalar en modo editable con verbose
+RUN cd /tmp/omnimrz-0.2.1 && \
+    pip install --verbose -e . 2>&1 | tee /tmp/install.log
+
+# DIAGNÓSTICO: ver qué se instaló realmente
+RUN echo "=== Archivos instalados en site-packages ===" && \
+    ls -la /usr/local/lib/python3.9/site-packages/ | grep -i omnimrz && \
+    echo "=== Buscando archivos .pth (modo editable) ===" && \
+    find /usr/local/lib/python3.9/site-packages -name "*.pth" -exec cat {} \; && \
+    echo "=== Verificando si hay algún módulo relacionado ===" && \
+    python -c "import sys; print('\n'.join(sys.path))" && \
+    python -c "import pkgutil; print([m.name for m in pkgutil.iter_modules() if 'omni' in m.name])"
+
+# Intento de importación forzada
+RUN python -c "import sys; sys.path.insert(0, '/tmp/omnimrz-0.2.1'); import omnimrz; print('IMPORTADO DESDE FUENTE')"
 
 CMD ["python"]
