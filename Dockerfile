@@ -27,7 +27,7 @@ RUN pip install --no-cache-dir \
     Pillow==10.1.0 \
     python-dateutil==2.8.2 \
     pytesseract==0.3.13 \
-    PyYAML==6.0.3 \
+    PyYAML \
     scipy==1.13.1
 
 # Descargar y extraer omnimrz
