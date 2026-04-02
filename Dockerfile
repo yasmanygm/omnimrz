@@ -90,9 +90,9 @@ RUN echo "=== Verificando enlaces simbólicos ===" && \
     echo "✅ Todos los enlaces creados correctamente"
 
 ENV PADDLEOCR_DOWNLOAD_MODELS=0
-
 ENV OMNIMRZ_DOWNLOAD_MODELS=0
-
 ENV FLAGS_use_mkldnn=0
+ENV FLAGS_cpu_quantize=0
+ENV PADDLE_WITH_MKLDNN=0
 
 CMD ["python"]
