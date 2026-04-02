@@ -1,14 +1,11 @@
 FROM python:3.9-slim-bookworm
 
 # ============================================
-# VARIABLES DE ENTORNO CRÍTICAS
+# VARIABLES DE ENTORNO
 # ============================================
-ENV PADDLEOCR_DOWNLOAD_MODELS=0
-ENV OMNIMRZ_DOWNLOAD_MODELS=0
 ENV FLAGS_use_mkldnn=0
-ENV FLAGS_cpu_quantize=0
 ENV PADDLE_WITH_MKLDNN=0
-ENV MKLDNN_ENABLE=false
+ENV PADDLEOCR_DOWNLOAD_MODELS=0
 
 # Dependencias del sistema
 RUN apt-get update && apt-get install -y \
@@ -22,10 +19,6 @@ RUN apt-get update && apt-get install -y \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-# ============================================
-# INSTALAR PADDLEPADDLE 2.5.2 (ÚLTIMA VERSIÓN SIN PROBLEMAS)
-# ============================================
-#RUN python -m pip install --no-cache-dir paddlepaddle==2.5.2 -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
 
 # Opción 1: Usar la versión especial para CPUs sin AVX
 RUN python -m pip install --no-cache-dir paddlepaddle==3.0.0b1 -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
@@ -64,17 +57,34 @@ RUN python -c "import omnimrz; print('OmniMRZ installed successfully')"
 # ============================================
 # DESCARGAR MODELOS MANUALMENTE
 # ============================================
+# ============================================
+# DESCARGAR MODELOS PP-OCRv3 (NO v4 o v5)
+# ============================================
 RUN mkdir -p /root/.paddleocr/whl/det/en /root/.paddleocr/whl/rec/en /root/.paddleocr/whl/cls && \
+    echo "📥 Descargando modelo DETECCIÓN PP-OCRv3..." && \
     curl -L https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_det_infer.tar -o /tmp/det.tar && \
     tar -xf /tmp/det.tar -C /root/.paddleocr/whl/det/en && \
     rm /tmp/det.tar && \
+    echo "📥 Descargando modelo RECONOCIMIENTO PP-OCRv3..." && \
     curl -L https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_rec_infer.tar -o /tmp/rec.tar && \
     tar -xf /tmp/rec.tar -C /root/.paddleocr/whl/rec/en && \
     rm /tmp/rec.tar && \
+    echo "📥 Descargando modelo CLASIFICACIÓN de texto (0°/180°)..." && \
     curl -L https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar -o /tmp/cls.tar && \
-    tar -xf /tmp/cls.tar -C /root/.paddleocr/whl/cls && \
-    rm /tmp/cls.tar
+    tar -xf /tmp/cls.tar -C /root/.paddleocr/whl/cls/ && \
+    rm /tmp/cls.tar && \
+    echo "📥 Descargando modelo CLASIFICACIÓN de documento (0°/90°/180°/270°)..." && \
+    curl -L https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_models/PP-LCNet_x1_0_doc_ori.tar -o /tmp/doc_cls.tar && \
+    tar -xf /tmp/doc_cls.tar -C /root/.paddleocr/whl/cls/ && \
+    rm /tmp/doc_cls.tar && \
+    echo "✅ Todos los modelos descargados correctamente"
 
+# Verificar modelos
+RUN echo "=== VERIFICANDO MODELOS ===" && \
+    ls -la /root/.paddleocr/whl/det/en/ && \
+    ls -la /root/.paddleocr/whl/rec/en/ && \
+    du -sh /root/.paddleocr/
+    
 # ============================================
 # VERIFICAR MODELOS
 # ============================================
