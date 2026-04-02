@@ -48,8 +48,8 @@ RUN python -m pip install --no-cache-dir Flask==2.3.3
 RUN python -c "import omnimrz; print('OmniMRZ installed successfully')"
 
 # Descargar modelos durante el build (sintaxis corregida)
-RUN python -c "from paddleocr import PaddleOCR; PaddleOCR(lang='en')"
-
+#RUN python -c "from paddleocr import PaddleOCR; PaddleOCR(lang='en')"
+RUN python -c "import os; os.environ['FLAGS_use_mkldnn']='0'; os.environ['PADDLE_WITH_MKLDNN']='0'; from paddleocr import PaddleOCR; PaddleOCR(lang='en', use_angle_cls=False, enable_mkldnn=False, use_gpu=False, show_log=False, cpu_threads=1)"
 # Verificar modelos descargados
 # ============================================
 # VERIFICAR MODELOS EN LA UBICACIÓN CORRECTA
