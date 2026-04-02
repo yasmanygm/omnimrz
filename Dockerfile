@@ -106,8 +106,9 @@ RUN ln -sf /root/.paddleocr /root/.paddleocr-models
 # ============================================
 # Este paso REQUIERE conexión a internet durante el build
 # Descargará automáticamente todos los modelos necesarios (PP-OCRv3, clasificadores, etc.)
-RUN python -c "import os; os.environ['FLAGS_use_mkldnn'] = '0'; os.environ['PADDLE_WITH_MKLDNN'] = '0'; from paddleocr import PaddleOCR; print('🔄 Inicializando PaddleOCR...'); ocr = PaddleOCR(lang='en', use_textline_orientation=False); print('✅ PaddleOCR inicializado correctamente'); from PIL import Image, ImageDraw; img = Image.new('RGB', (800, 300), 'white'); draw = ImageDraw.Draw(img); draw.text((50, 100), 'P<ESPULPEREZ<<YASMANY<JOSE<<<<<<<<<<<<<<<<<<<', fill='black'); draw.text((50, 150), 'XC123456<3ESP8511015M2801015<<<<<<<<<<<<<<<4', fill='black'); img.save('/tmp/test.jpg'); result = ocr.ocr('/tmp/test.jpg'); print('✅ Prueba exitosa' if result and result[0] else '⚠️ No se detectó texto')"
+COPY init_paddle.py /tmp/init_paddle.py
 
+RUN python /tmp/init_paddle.py
 # Verificar modelos descargados
 RUN echo "=== Modelos descargados ===" && \
     ls -la /root/.paddleocr/ && \
