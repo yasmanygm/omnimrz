@@ -1,5 +1,11 @@
 FROM python:3.9-slim-bookworm
 
+ENV PADDLEOCR_DOWNLOAD_MODELS=0
+ENV OMNIMRZ_DOWNLOAD_MODELS=0
+ENV FLAGS_use_mkldnn=0
+ENV FLAGS_cpu_quantize=0
+ENV PADDLE_WITH_MKLDNN=0
+
 # Dependencias del sistema
 RUN apt-get update && apt-get install -y \
     libgl1 \
@@ -90,11 +96,5 @@ RUN echo "=== Verificando enlaces simbólicos ===" && \
     ls -la /root/.paddlex/ && \
     ls -la /root/.omnimrz/models && \
     echo "✅ Todos los enlaces creados correctamente"
-
-ENV PADDLEOCR_DOWNLOAD_MODELS=0
-ENV OMNIMRZ_DOWNLOAD_MODELS=0
-ENV FLAGS_use_mkldnn=0
-ENV FLAGS_cpu_quantize=0
-ENV PADDLE_WITH_MKLDNN=0
 
 CMD ["python"]
