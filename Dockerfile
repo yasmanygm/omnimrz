@@ -26,7 +26,7 @@ RUN python -m pip install --no-cache-dir paddlepaddle==3.0.0b1 -i https://www.pa
 # ============================================
 # INSTALAR NUMPY 1.X PRIMERO (CRUCIAL)
 # ============================================
-RUN pip install --no-cache-dir numpy==1.26.4
+RUN pip install --no-cache-dir numpy==1.23.5
 
 RUN pip install --no-cache-dir \
     opencv-python-headless \
