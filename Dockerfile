@@ -42,6 +42,8 @@ RUN cp -r /tmp/OmniMRZ-0.2.0/omnimrz /usr/local/lib/python3.9/site-packages/
 # Instalar dependencias adicionales
 RUN python -m pip install --no-cache-dir ScreenshotScanner PyYAML pytesseract opencv-python scipy
 
+RUN python -m pip install --no-cache-dir Flask==2.3.3
+
 # Verificar que el módulo omnimrz se importa correctamente
 RUN python -c "import omnimrz; print('OmniMRZ installed successfully')"
 
