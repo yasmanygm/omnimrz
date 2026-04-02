@@ -15,9 +15,10 @@ RUN apt-get update && apt-get install -y \
     libxrender1 \
     libgomp1 \
     curl \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar PaddlePaddle (para hardware sin AVX)
+# Instalar PaddlePaddle (versión estable 2.6.2)
 RUN python -m pip install --no-cache-dir paddlepaddle==2.6.2 -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
 
 # ============================================
@@ -37,10 +38,8 @@ RUN pip install --no-cache-dir \
     scipy
 
 # Descargar y extraer omnimrz
-#RUN curl -L https://files.pythonhosted.org/packages/source/o/omnimrz/omnimrz-0.2.1.tar.gz -o /tmp/omnimrz.tar.gz &&  cd /tmp && tar -xzf omnimrz.tar.gz
-
-# Descargar y extraer omnimrz
-RUN curl -L https://github.com/AzwadFawadHasan/OmniMRZ/archive/refs/tags/v0.2.0.tar.gz -o /tmp/omnimrz.tar.gz &&  cd /tmp && tar -xzf omnimrz.tar.gz
+RUN curl -L https://github.com/AzwadFawadHasan/OmniMRZ/archive/refs/tags/v0.2.0.tar.gz -o /tmp/omnimrz.tar.gz && \
+    cd /tmp && tar -xzf omnimrz.tar.gz
 
 # Copiar manualmente el código fuente a site-packages
 RUN cp -r /tmp/OmniMRZ-0.2.0/omnimrz /usr/local/lib/python3.9/site-packages/
@@ -53,10 +52,25 @@ RUN python -m pip install --no-cache-dir Flask==2.3.3
 # Verificar que el módulo omnimrz se importa correctamente
 RUN python -c "import omnimrz; print('OmniMRZ installed successfully')"
 
-# Descargar modelos durante el build (sintaxis corregida)
-#RUN python -c "from paddleocr import PaddleOCR; PaddleOCR(lang='en')"
-RUN python -c "import os; os.environ['FLAGS_use_mkldnn']='0'; os.environ['PADDLE_WITH_MKLDNN']='0'; from paddleocr import PaddleOCR; PaddleOCR(lang='en', use_angle_cls=False, enable_mkldnn=False, use_gpu=False, show_log=False, cpu_threads=1)"
-# Verificar modelos descargados
+# ============================================
+# DESCARGAR MODELOS MANUALMENTE (SIN EJECUTAR PADDLEOCR)
+# ============================================
+# Esto evita el Segmentation Fault causado por oneDNN en CPUs sin AVX
+RUN mkdir -p /root/.paddleocr/whl/det/en /root/.paddleocr/whl/rec/en /root/.paddleocr/whl/cls && \
+    echo "Descargando modelo de detección..." && \
+    curl -L https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_det_infer.tar -o /tmp/det.tar && \
+    tar -xf /tmp/det.tar -C /root/.paddleocr/whl/det/en && \
+    rm /tmp/det.tar && \
+    echo "Descargando modelo de reconocimiento..." && \
+    curl -L https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_rec_infer.tar -o /tmp/rec.tar && \
+    tar -xf /tmp/rec.tar -C /root/.paddleocr/whl/rec/en && \
+    rm /tmp/rec.tar && \
+    echo "Descargando modelo de clasificación..." && \
+    curl -L https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar -o /tmp/cls.tar && \
+    tar -xf /tmp/cls.tar -C /root/.paddleocr/whl/cls && \
+    rm /tmp/cls.tar && \
+    echo "✅ Modelos descargados correctamente"
+
 # ============================================
 # VERIFICAR MODELOS EN LA UBICACIÓN CORRECTA
 # ============================================
@@ -65,10 +79,13 @@ RUN echo "=== Verificando modelos descargados ===" && \
     ls -la /root/.paddleocr/ && \
     echo "" && \
     echo "Modelos de detección:" && \
-    ls -la /root/.paddleocr/whl/det/ && \
+    ls -la /root/.paddleocr/whl/det/en/ && \
     echo "" && \
     echo "Modelos de reconocimiento:" && \
-    ls -la /root/.paddleocr/whl/rec/ && \
+    ls -la /root/.paddleocr/whl/rec/en/ && \
+    echo "" && \
+    echo "Modelos de clasificación:" && \
+    ls -la /root/.paddleocr/whl/cls/ && \
     echo "" && \
     echo "Espacio total usado por modelos:" && \
     du -sh /root/.paddleocr/
@@ -76,19 +93,13 @@ RUN echo "=== Verificando modelos descargados ===" && \
 # ============================================
 # CREAR ENLACES PARA COMPATIBILIDAD
 # ============================================
-# Crear enlace para compatibilidad con /root/.paddlex (si algún código lo espera)
 RUN mkdir -p /root/.paddlex && \
-    ln -sf /root/.paddleocr /root/.paddlex/official_models && \
-    echo "✅ Enlace /root/.paddlex/official_models -> /root/.paddleocr"
+    ln -sf /root/.paddleocr /root/.paddlex/official_models
 
-# Crear enlace para OmniMRZ (busca en /root/.omnimrz/models)
 RUN mkdir -p /root/.omnimrz && \
-    ln -sf /root/.paddleocr /root/.omnimrz/models && \
-    echo "✅ /root/.omnimrz/models -> /root/.paddleocr"
+    ln -sf /root/.paddleocr /root/.omnimrz/models
 
-# Crear enlace adicional por si OmniMRZ busca en otra ubicación
-RUN ln -sf /root/.paddleocr /root/.paddleocr-models && \
-    echo "✅ Enlace adicional creado"
+RUN ln -sf /root/.paddleocr /root/.paddleocr-models
 
 # Verificar enlaces
 RUN echo "=== Verificando enlaces simbólicos ===" && \
