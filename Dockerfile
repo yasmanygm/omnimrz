@@ -49,27 +49,50 @@ RUN python -c "import omnimrz; print('OmniMRZ installed successfully')"
 RUN python -c "from paddleocr import PaddleOCR; PaddleOCR(lang='en')"
 
 # Verificar modelos descargados
-RUN echo "=== Modelos descargados por PaddleOCR ===" && \
-    ls -la /root/.paddlex/official_models/ && \
-    du -sh /root/.paddlex/
+# ============================================
+# VERIFICAR MODELOS EN LA UBICACIÓN CORRECTA
+# ============================================
+RUN echo "=== Verificando modelos descargados ===" && \
+    echo "Buscando en /root/.paddleocr/:" && \
+    ls -la /root/.paddleocr/ && \
+    echo "" && \
+    echo "Modelos de detección:" && \
+    ls -la /root/.paddleocr/whl/det/ && \
+    echo "" && \
+    echo "Modelos de reconocimiento:" && \
+    ls -la /root/.paddleocr/whl/rec/ && \
+    echo "" && \
+    echo "Espacio total usado por modelos:" && \
+    du -sh /root/.paddleocr/
 
-# Crear enlace para PaddleOCR (por si busca en /root/.paddleocr)
-RUN ln -sf /root/.paddlex /root/.paddleocr && \
-    echo "✅ /root/.paddleocr -> /root/.paddlex"
+# ============================================
+# CREAR ENLACES PARA COMPATIBILIDAD
+# ============================================
+# Crear enlace para compatibilidad con /root/.paddlex (si algún código lo espera)
+RUN mkdir -p /root/.paddlex && \
+    ln -sf /root/.paddleocr /root/.paddlex/official_models && \
+    echo "✅ Enlace /root/.paddlex/official_models -> /root/.paddleocr"
 
 # Crear enlace para OmniMRZ (busca en /root/.omnimrz/models)
 RUN mkdir -p /root/.omnimrz && \
-    ln -sf /root/.paddlex /root/.omnimrz/models && \
-    echo "✅ /root/.omnimrz/models -> /root/.paddlex"
+    ln -sf /root/.paddleocr /root/.omnimrz/models && \
+    echo "✅ /root/.omnimrz/models -> /root/.paddleocr"
+
+# Crear enlace adicional por si OmniMRZ busca en otra ubicación
+RUN ln -sf /root/.paddleocr /root/.paddleocr-models && \
+    echo "✅ Enlace adicional creado"
 
 # Verificar enlaces
 RUN echo "=== Verificando enlaces simbólicos ===" && \
     ls -la /root/.paddleocr && \
+    ls -la /root/.paddlex/ && \
     ls -la /root/.omnimrz/models && \
-    echo "✅ Enlaces creados correctamente"
+    echo "✅ Todos los enlaces creados correctamente"
 
 ENV PADDLEOCR_DOWNLOAD_MODELS=0
+
 ENV OMNIMRZ_DOWNLOAD_MODELS=0
+
 ENV FLAGS_use_mkldnn=0
 
 CMD ["python"]
