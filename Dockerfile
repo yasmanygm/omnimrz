@@ -73,11 +73,7 @@ RUN mkdir -p /root/.paddleocr/whl/det/en /root/.paddleocr/whl/rec/en /root/.padd
     curl -L https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar -o /tmp/cls.tar && \
     tar -xf /tmp/cls.tar -C /root/.paddleocr/whl/cls/ && \
     rm /tmp/cls.tar && \
-    echo "📥 Descargando modelo CLASIFICACIÓN de documento (0°/90°/180°/270°)..." && \
-    curl -L https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_models/PP-LCNet_x1_0_doc_ori.tar -o /tmp/doc_cls.tar && \
-    tar -xf /tmp/doc_cls.tar -C /root/.paddleocr/whl/cls/ && \
-    rm /tmp/doc_cls.tar && \
-    echo "✅ Todos los modelos descargados correctamente"
+    echo "✅ Modelos descargados correctamente"
 
 # Verificar modelos
 RUN echo "=== VERIFICANDO MODELOS ===" && \
