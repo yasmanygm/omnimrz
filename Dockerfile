@@ -25,7 +25,10 @@ RUN apt-get update && apt-get install -y \
 # ============================================
 # INSTALAR PADDLEPADDLE 2.5.2 (ÚLTIMA VERSIÓN SIN PROBLEMAS)
 # ============================================
-RUN python -m pip install --no-cache-dir paddlepaddle==2.5.2 -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
+#RUN python -m pip install --no-cache-dir paddlepaddle==2.5.2 -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
+
+# Opción 1: Usar la versión especial para CPUs sin AVX
+RUN python -m pip install --no-cache-dir paddlepaddle==3.0.0b1 -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
 
 # ============================================
 # INSTALAR NUMPY 1.X PRIMERO (CRUCIAL)
