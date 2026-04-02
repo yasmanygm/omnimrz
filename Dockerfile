@@ -31,7 +31,7 @@ RUN pip install --no-cache-dir numpy==1.23.5
 RUN pip install --no-cache-dir \
     opencv-python-headless \
     paddleocr==2.6.1.2 \
-    'numpy>=1.21,<2.0' \
+    'numpy>=1.21,<=1.23.5' \
     Flask==2.3.3 \
     Pillow \
     python-dateutil \
