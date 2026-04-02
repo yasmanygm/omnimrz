@@ -15,10 +15,9 @@ RUN apt-get update && apt-get install -y \
 RUN python -m pip install --no-cache-dir paddlepaddle==3.0.0 -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
 
 # ============================================
-# INSTALAR DEPENDENCIAS CON VERSIONES COMPATIBLES
+# INSTALAR NUMPY 1.X PRIMERO (CRUCIAL)
 # ============================================
-# Primero numpy (debe ir antes que opencv)
-RUN pip install --no-cache-dir numpy
+RUN pip install --no-cache-dir numpy==1.26.4
 
 RUN pip install --no-cache-dir \
     opencv-python-headless \
