@@ -31,7 +31,7 @@ RUN pip install --no-cache-dir scipy==1.10.1
 # ============================================
 # INSTALAR OPENCV (VERSIÓN CON WHEEL SEGURO)
 # ============================================
-RUN pip install --no-cache-dir opencv-python-headless==4.8.1.78
+RUN pip install --no-cache-dir opencv-python-headless==4.5.5.64
 
 RUN pip install --no-cache-dir \
     opencv-python-headless \
