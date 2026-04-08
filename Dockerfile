@@ -26,17 +26,17 @@ RUN python -m pip install --no-cache-dir paddlepaddle==3.0.0b1 -i https://www.pa
 # ============================================
 # INSTALAR NUMPY 1.X PRIMERO (CRUCIAL)
 # ============================================
-RUN pip install --no-cache-dir numpy==1.23.5
-RUN pip install --no-cache-dir scipy==1.10.1
 # ============================================
-# INSTALAR OPENCV (VERSIÓN CON WHEEL SEGURO)
+# INSTALAR PADDLEOCR 3.3.2 Y PADDLEX 3.3.12 (versiones requeridas)
 # ============================================
-RUN pip install --no-cache-dir opencv-python-headless==4.5.5.64
+RUN pip install --no-cache-dir \
+    opencv-python-headless==4.8.1.78 \
+    paddleocr==3.3.2 \
+    paddlex==3.3.12
+
 
 RUN pip install --no-cache-dir \
-    opencv-python-headless \
-    paddleocr==2.10.0 \
-    'numpy>=1.21,<=1.23.5' \
+    numpy \
     Flask==2.3.3 \
     flask-swagger-ui \
     Pillow \
