@@ -27,6 +27,7 @@ RUN python -m pip install --no-cache-dir paddlepaddle==3.0.0b1 -i https://www.pa
 # INSTALAR NUMPY 1.X PRIMERO (CRUCIAL)
 # ============================================
 RUN pip install --no-cache-dir numpy==1.23.5
+RUN pip install --no-cache-dir scipy==1.10.1
 
 RUN pip install --no-cache-dir \
     opencv-python-headless \
@@ -37,8 +38,7 @@ RUN pip install --no-cache-dir \
     Pillow \
     python-dateutil \
     pytesseract \
-    PyYAML \
-    scipy
+    PyYAML
 
 # Descargar y extraer omnimrz
 RUN curl -L https://github.com/AzwadFawadHasan/OmniMRZ/archive/refs/tags/v0.2.0.tar.gz -o /tmp/omnimrz.tar.gz && \
