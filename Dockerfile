@@ -28,6 +28,10 @@ RUN python -m pip install --no-cache-dir paddlepaddle==3.0.0b1 -i https://www.pa
 # ============================================
 RUN pip install --no-cache-dir numpy==1.23.5
 RUN pip install --no-cache-dir scipy==1.10.1
+# ============================================
+# INSTALAR OPENCV (VERSIÓN CON WHEEL SEGURO)
+# ============================================
+RUN pip install --no-cache-dir opencv-python-headless==4.8.1.78
 
 RUN pip install --no-cache-dir \
     opencv-python-headless \
