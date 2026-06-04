@@ -1,0 +1,23 @@
+// init.gradle — Equivalente a tu settings.xml
+// Colocar en ~/.gradle/init.gradle
+// Aplica globalmente para TODOS los proyectos Gradle
+
+allprojects {
+    repositories {
+        // Mirror único = drix-maven -> maven-public
+        maven {
+            name "drix-maven"
+            url "http://172.24.11.237:8081/repository/maven-public/"
+            allowInsecureProtocol true
+
+            credentials {
+                username = "plataforma-deploy"
+                password = "deploy.2026"
+            }
+        }
+
+        // Fallbacks (opcional, si el mirror falla)
+        google()
+        mavenCentral()
+    }
+}
