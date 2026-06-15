@@ -1,46 +1,53 @@
 name: Build and Export Docker Image
-
 on:
   push:
-    branches: [ main, master ]      # Se ejecuta al pushear a main/master
+    branches: [main, master]
     paths:
-      - 'Dockerfile'                 # Solo si cambió Dockerfile
-      - '.github/workflows/build-docker.yml'  # O si cambió el workflow
-  workflow_dispatch:                 # También se puede ejecutar manualmente
-
+      - 'Dockerfile'
+      - '.github/workflows/build-docker.yml'
+  workflow_dispatch:
 jobs:
   build:
-    runs-on: ubuntu-latest           # Usa un runner de Ubuntu
-    
+    runs-on: ubuntu-latest
+    outputs:
+      files: ${{ steps.split.outputs.files }}
     steps:
-      # Descarga el código del repositorio
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      # Configura Buildx para mejores capacidades de build
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker-container   # Usa driver container para mejor compatibilidad
-      
-      # Construye la imagen Docker usando el Dockerfile
-      - name: Build Docker image
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build and compress image
         run: |
           docker build -t omnimrz-paddleocr:latest .
-          # Exporta la imagen a un archivo .tar
           docker save omnimrz-paddleocr:latest -o omnimrz-paddleocr.tar
-      
-      # Comprime el archivo para reducir tamaño
-      - name: Compress image
-        run: |
           gzip -c omnimrz-paddleocr.tar > omnimrz-paddleocr.tar.gz
-      
-      # Sube el archivo como artefacto descargable
-      - name: Upload Docker image as artifact
-        uses: actions/upload-artifact@v4
+          rm -f omnimrz-paddleocr.tar
+          ls -lh omnimrz-paddleocr.tar.gz
+      - name: Split into 1GB chunks
+        id: split
+        run: |
+          split -b 1G omnimrz-paddleocr.tar.gz chunk.
+          rm -f omnimrz-paddleocr.tar.gz
+          ls -lh chunk.*
+          files=$(ls chunk.* | jq -R -s -c 'split("\n") | map(select(. != ""))')
+          echo "files=$files" >> $GITHUB_OUTPUT
+      - uses: actions/upload-artifact@v4
         with:
-          name: omnimrz-docker-image
-          path: |
-            omnimrz-paddleocr.tar
-            omnimrz-paddleocr.tar.gz
+          name: all-chunks
+          path: chunk.*
+          compression-level: 0
+          retention-days: 1
+  upload-chunks:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        file: ${{ fromJson(needs.build.outputs.files) }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: all-chunks
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docker-part-${{ matrix.file }}
+          path: ${{ matrix.file }}
+          compression-level: 0
           retention-days: 7
